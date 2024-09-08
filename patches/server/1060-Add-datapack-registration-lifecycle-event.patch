@@ -9,7 +9,7 @@ public net/minecraft/server/packs/repository/FolderRepositorySource$FolderPackDe
 
 diff --git a/src/main/java/io/papermc/paper/datapack/PaperDatapackRegistrarImpl.java b/src/main/java/io/papermc/paper/datapack/PaperDatapackRegistrarImpl.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9249cf8ddd561b28695177548da020b2123a49f1
+index 0000000000000000000000000000000000000000..064675ca69688d4e9aac67ec1b8318c2d0bbbb84
 --- /dev/null
 +++ b/src/main/java/io/papermc/paper/datapack/PaperDatapackRegistrarImpl.java
 @@ -0,0 +1,168 @@
@@ -70,21 +70,21 @@ index 0000000000000000000000000000000000000000..9249cf8ddd561b28695177548da020b2
 +    }
 +
 +    @Override
-+    public boolean hasPackDiscovered(final String id) {
-+        return this.discoveredPacks.containsKey(id);
++    public boolean hasPackDiscovered(final String name) {
++        return this.discoveredPacks.containsKey(name);
 +    }
 +
 +    @Override
-+    public @NonNull Datapack getDiscoveredPack(final String id) {
-+        if (!this.hasPackDiscovered(id)) {
-+            throw new NoSuchElementException("No pack with id " + id + " was discovered");
++    public @NonNull Datapack getDiscoveredPack(final String name) {
++        if (!this.hasPackDiscovered(name)) {
++            throw new NoSuchElementException("No pack with id " + name + " was discovered");
 +        }
-+        return new PaperDatapack(this.discoveredPacks.get(id), this.previouslyEnabledPacks.contains(id));
++        return new PaperDatapack(this.discoveredPacks.get(name), this.previouslyEnabledPacks.contains(name));
 +    }
 +
 +    @Override
-+    public boolean removeDiscoveredPack(final String id) {
-+        return this.discoveredPacks.remove(id) != null;
++    public boolean removeDiscoveredPack(final String name) {
++        return this.discoveredPacks.remove(name) != null;
 +    }
 +
 +    @Override

@@ -21,10 +21,10 @@ index 7b2ab0be10a21e0496ad1d485ff8cb2c0b92a2cb..e6037cc5b79b5206e5da8d53c5009932
  }
 diff --git a/src/main/java/io/papermc/paper/datapack/DatapackRegistrar.java b/src/main/java/io/papermc/paper/datapack/DatapackRegistrar.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1f3c2b7b6
+index 0000000000000000000000000000000000000000..a13611009c9c1e2c18535869207ae4f9c8ad7cd8
 --- /dev/null
 +++ b/src/main/java/io/papermc/paper/datapack/DatapackRegistrar.java
-@@ -0,0 +1,198 @@
+@@ -0,0 +1,201 @@
 +package io.papermc.paper.datapack;
 +
 +import io.papermc.paper.plugin.configuration.PluginMeta;
@@ -73,32 +73,35 @@ index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1
 +public interface DatapackRegistrar extends Registrar {
 +
 +    /**
-+     * Checks if a datapack with the specified id has been discovered.
++     * Checks if a datapack with the specified name has been discovered.
 +     *
-+     * @param id the id of the pack
++     * @param name the name of the pack
 +     * @return true if the pack has been discovered
++     * @see Datapack#getName()
 +     */
 +    @Contract(pure = true)
-+    boolean hasPackDiscovered(@NonNull String id);
++    boolean hasPackDiscovered(@NonNull String name);
 +
 +    /**
-+     * Gets a discovered datapack by its id.
++     * Gets a discovered datapack by its name.
 +     *
-+     * @param id the id of the pack
++     * @param name the name of the pack
 +     * @return the datapack
 +     * @throws java.util.NoSuchElementException if the pack is not discovered
++     * @see Datapack#getName()
 +     */
 +    @Contract(pure = true)
-+    @NonNull Datapack getDiscoveredPack(@NonNull String id);
++    @NonNull Datapack getDiscoveredPack(@NonNull String name);
 +
 +    /**
-+     * Removes a discovered datapack by its id.
++     * Removes a discovered datapack by its name.
 +     *
-+     * @param id the id of the pack
++     * @param name the name of the pack
 +     * @return true if the pack was removed
++     * @see Datapack#getName()
 +     */
 +    @Contract(mutates = "this")
-+    boolean removeDiscoveredPack(@NonNull String id);
++    boolean removeDiscoveredPack(@NonNull String name);
 +
 +    /**
 +     * Gets all discovered datapacks.
@@ -113,7 +116,7 @@ index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1
 +     * <p>Symlinks obey the {@code allowed_symlinks.txt} in the server root directory.</p>
 +     *
 +     * @param uri the location of the pack
-+     * @param id a unique id
++     * @param id a unique id (will be combined with plugin for the datapacks name)
 +     * @return the discovered datapack (or null if it failed)
 +     * @throws IOException if any IO error occurs
 +     */
@@ -126,7 +129,7 @@ index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1
 +     * <p>Symlinks obey the {@code allowed_symlinks.txt} in the server root directory.</p>
 +     *
 +     * @param uri the location of the pack
-+     * @param id a unique id
++     * @param id a unique id (will be combined with plugin for the datapacks name)
 +     * @param configurer a configurer for extra options
 +     * @return the discovered datapack (or null if it failed)
 +     * @throws IOException if any IO error occurs
@@ -138,7 +141,7 @@ index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1
 +     * <p>Symlinks obey the {@code allowed_symlinks.txt} in the server root directory.</p>
 +     *
 +     * @param path the location of the pack
-+     * @param id a unique id
++     * @param id a unique id (will be combined with plugin for the datapacks name)
 +     * @return the discovered datapack (or null if it failed)
 +     * @throws IOException if any IO error occurs
 +     */
@@ -151,7 +154,7 @@ index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1
 +     * <p>Symlinks obey the {@code allowed_symlinks.txt} in the server root directory.</p>
 +     *
 +     * @param path the location of the pack
-+     * @param id a unique id
++     * @param id a unique id (will be combined with plugin for the datapacks name)
 +     * @param configurer a configurer for extra options
 +     * @return the discovered datapack (or null if it failed)
 +     * @throws IOException if any IO error occurs
@@ -164,7 +167,7 @@ index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1
 +     *
 +     * @param pluginMeta the plugin which will be the "owner" of this datapack
 +     * @param uri the location of the pack
-+     * @param id a unique id
++     * @param id a unique id (will be combined with plugin for the datapacks name)
 +     * @param configurer a configurer for extra options
 +     * @return the discovered datapack (or null if it failed)
 +     * @throws IOException if any IO error occurs
@@ -177,7 +180,7 @@ index 0000000000000000000000000000000000000000..66ee27f25a0f8049e218c8722075fcb1
 +     *
 +     * @param pluginMeta the plugin which will be the "owner" of this datapack
 +     * @param path the location of the pack
-+     * @param id a unique id
++     * @param id a unique id (will be combined with plugin for the datapacks name)
 +     * @param configurer a configurer for extra options
 +     * @return the discovered datapack (or null if it failed)
 +     * @throws IOException if any IO error occurs
