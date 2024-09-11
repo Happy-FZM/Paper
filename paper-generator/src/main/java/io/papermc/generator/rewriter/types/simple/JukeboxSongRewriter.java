@@ -1,6 +1,6 @@
 package io.papermc.generator.rewriter.types.simple;
 
-import io.papermc.generator.rewriter.types.RegistryFieldRewriter;
+import io.papermc.generator.rewriter.types.registry.RegistryFieldRewriter;
 import io.papermc.generator.utils.ClassHelper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

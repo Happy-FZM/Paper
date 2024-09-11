@@ -1,6 +1,6 @@
 package io.papermc.generator.rewriter.types.simple;
 
-import io.papermc.generator.rewriter.types.EnumRegistryRewriter;
+import io.papermc.generator.rewriter.types.registry.EnumRegistryRewriter;
 import io.papermc.generator.utils.BlockStateMapping;
 import io.papermc.generator.utils.Formatting;
 import io.papermc.generator.utils.experimental.FlagHolders;

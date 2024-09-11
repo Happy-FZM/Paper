@@ -1,11 +1,12 @@
 package io.papermc.generator;
 
 import io.papermc.generator.rewriter.registration.PatternSourceSetRewriter;
-import io.papermc.generator.rewriter.types.EnumRegistryRewriter;
-import io.papermc.generator.rewriter.types.FeatureFlagRewriter;
-import io.papermc.generator.rewriter.types.RegistryFieldRewriter;
-import io.papermc.generator.rewriter.types.TagRewriter;
+import io.papermc.generator.rewriter.types.registry.EnumRegistryRewriter;
+import io.papermc.generator.rewriter.types.registry.FeatureFlagRewriter;
+import io.papermc.generator.rewriter.types.registry.RegistryFieldRewriter;
+import io.papermc.generator.rewriter.types.registry.TagRewriter;
 import io.papermc.generator.rewriter.types.Types;
+import io.papermc.generator.rewriter.types.registry.definition.RegistryDefinitionRewriters;
 import io.papermc.generator.rewriter.types.simple.BlockTypeRewriter;
 import io.papermc.generator.rewriter.types.simple.CraftBlockDataMapping;
 import io.papermc.generator.rewriter.types.simple.CraftBlockEntityStateMapping;
@@ -198,5 +199,6 @@ public final class Rewriters {
                 holder("CraftPotionUtil#upgradeable", new CraftPotionUtilRewriter("strong")),
                 holder("CraftPotionUtil#extendable", new CraftPotionUtilRewriter("long"))
             ));
+        RegistryDefinitionRewriters.bootstrap(apiSourceSet, serverSourceSet);
     }
 }

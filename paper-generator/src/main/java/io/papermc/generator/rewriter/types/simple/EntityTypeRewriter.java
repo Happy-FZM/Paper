@@ -2,7 +2,7 @@ package io.papermc.generator.rewriter.types.simple;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
-import io.papermc.generator.rewriter.types.EnumRegistryRewriter;
+import io.papermc.generator.rewriter.types.registry.EnumRegistryRewriter;
 import io.papermc.generator.types.goal.MobGoalNames;
 import io.papermc.generator.utils.ClassHelper;
 import io.papermc.typewriter.preset.model.EnumValue;

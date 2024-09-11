@@ -12,7 +12,6 @@ import io.papermc.generator.types.SimpleGenerator;
 import io.papermc.generator.utils.Annotations;
 import io.papermc.generator.utils.Formatting;
 import io.papermc.generator.utils.Javadocs;
-import io.papermc.generator.utils.RegistryUtils;
 import io.papermc.generator.utils.experimental.SingleFlagHolder;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.tag.TagKey;
@@ -25,7 +24,6 @@ import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static io.papermc.generator.utils.Annotations.EXPERIMENTAL_API_ANNOTATION;
 import static io.papermc.generator.utils.Annotations.NON_NULL;
 import static io.papermc.generator.utils.Annotations.experimentalAnnotations;
-import static java.util.Objects.requireNonNull;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -35,14 +33,14 @@ public class GeneratedTagKeyType<T, A> extends SimpleGenerator {
 
     private final Class<A> apiType;
     private final ResourceKey<? extends Registry<T>> registryKey;
-    private final RegistryKey<A> apiRegistryKey;
+    private final String apiRegistryKeyField;
     private final boolean publicCreateKeyMethod;
 
-    public GeneratedTagKeyType(final String className, final Class<A> apiType, final String packageName, final ResourceKey<? extends Registry<T>> registryKey, final RegistryKey<A> apiRegistryKey, final boolean publicCreateKeyMethod) {
+    public GeneratedTagKeyType(final String className, final Class<A> apiType, final String packageName, final ResourceKey<? extends Registry<T>> registryKey, final String apiRegistryKeyField, final boolean publicCreateKeyMethod) {
         super(className, packageName);
         this.apiType = apiType;
         this.registryKey = registryKey;
-        this.apiRegistryKey = apiRegistryKey;
+        this.apiRegistryKeyField = apiRegistryKeyField;
         this.publicCreateKeyMethod = publicCreateKeyMethod;
     }
 
@@ -53,7 +51,7 @@ public class GeneratedTagKeyType<T, A> extends SimpleGenerator {
         final MethodSpec.Builder create = MethodSpec.methodBuilder("create")
             .addModifiers(this.publicCreateKeyMethod ? PUBLIC : PRIVATE, STATIC)
             .addParameter(keyParam)
-            .addCode("return $T.create($T.$L, $N);", TagKey.class, RegistryKey.class, requireNonNull(RegistryUtils.REGISTRY_KEY_FIELD_NAMES.get(this.apiRegistryKey)), keyParam)
+            .addCode("return $T.create($T.$L, $N);", TagKey.class, RegistryKey.class, this.apiRegistryKeyField, keyParam)
             .returns(returnType.annotated(NON_NULL));
         if (this.publicCreateKeyMethod) {
             create.addAnnotation(EXPERIMENTAL_API_ANNOTATION); // TODO remove once not experimental
@@ -65,7 +63,7 @@ public class GeneratedTagKeyType<T, A> extends SimpleGenerator {
     private TypeSpec.Builder keyHolderType() {
         return classBuilder(this.className)
             .addModifiers(PUBLIC, FINAL)
-            .addJavadoc(Javadocs.getVersionDependentClassHeader("{@link $T#$L}"), RegistryKey.class, requireNonNull(RegistryUtils.REGISTRY_KEY_FIELD_NAMES.get(this.apiRegistryKey)))
+            .addJavadoc(Javadocs.getVersionDependentClassHeader("{@link $T#$L}"), RegistryKey.class, this.apiRegistryKeyField)
             .addAnnotations(Annotations.CLASS_HEADER)
             .addMethod(MethodSpec.constructorBuilder()
                 .addModifiers(PRIVATE)

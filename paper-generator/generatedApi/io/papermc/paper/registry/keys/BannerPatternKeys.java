@@ -6,12 +6,12 @@ import io.papermc.paper.generated.GeneratedFrom;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
 import net.kyori.adventure.key.Key;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.block.banner.PatternType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Vanilla keys for {@link RegistryKey#ENCHANTMENT}.
+ * Vanilla keys for {@link RegistryKey#BANNER_PATTERN}.
  *
  * @apiNote The fields provided here are a direct representation of
  * what is available from the vanilla game source. They may be
@@ -25,312 +25,319 @@ import org.jetbrains.annotations.ApiStatus;
 })
 @GeneratedFrom("1.21.1")
 @ApiStatus.Experimental
-public final class EnchantmentKeys {
+public final class BannerPatternKeys {
     /**
-     * {@code minecraft:aqua_affinity}
+     * {@code minecraft:base}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> AQUA_AFFINITY = create(key("aqua_affinity"));
+    public static final TypedKey<PatternType> BASE = create(key("base"));
 
     /**
-     * {@code minecraft:bane_of_arthropods}
+     * {@code minecraft:border}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> BANE_OF_ARTHROPODS = create(key("bane_of_arthropods"));
+    public static final TypedKey<PatternType> BORDER = create(key("border"));
 
     /**
-     * {@code minecraft:binding_curse}
+     * {@code minecraft:bricks}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> BINDING_CURSE = create(key("binding_curse"));
+    public static final TypedKey<PatternType> BRICKS = create(key("bricks"));
 
     /**
-     * {@code minecraft:blast_protection}
+     * {@code minecraft:circle}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> BLAST_PROTECTION = create(key("blast_protection"));
+    public static final TypedKey<PatternType> CIRCLE = create(key("circle"));
 
     /**
-     * {@code minecraft:breach}
+     * {@code minecraft:creeper}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> BREACH = create(key("breach"));
+    public static final TypedKey<PatternType> CREEPER = create(key("creeper"));
 
     /**
-     * {@code minecraft:channeling}
+     * {@code minecraft:cross}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> CHANNELING = create(key("channeling"));
+    public static final TypedKey<PatternType> CROSS = create(key("cross"));
 
     /**
-     * {@code minecraft:density}
+     * {@code minecraft:curly_border}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> DENSITY = create(key("density"));
+    public static final TypedKey<PatternType> CURLY_BORDER = create(key("curly_border"));
 
     /**
-     * {@code minecraft:depth_strider}
+     * {@code minecraft:diagonal_left}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> DEPTH_STRIDER = create(key("depth_strider"));
+    public static final TypedKey<PatternType> DIAGONAL_LEFT = create(key("diagonal_left"));
 
     /**
-     * {@code minecraft:efficiency}
+     * {@code minecraft:diagonal_right}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> EFFICIENCY = create(key("efficiency"));
+    public static final TypedKey<PatternType> DIAGONAL_RIGHT = create(key("diagonal_right"));
 
     /**
-     * {@code minecraft:feather_falling}
+     * {@code minecraft:diagonal_up_left}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> FEATHER_FALLING = create(key("feather_falling"));
+    public static final TypedKey<PatternType> DIAGONAL_UP_LEFT = create(key("diagonal_up_left"));
 
     /**
-     * {@code minecraft:fire_aspect}
+     * {@code minecraft:diagonal_up_right}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> FIRE_ASPECT = create(key("fire_aspect"));
+    public static final TypedKey<PatternType> DIAGONAL_UP_RIGHT = create(key("diagonal_up_right"));
 
     /**
-     * {@code minecraft:fire_protection}
+     * {@code minecraft:flow}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> FIRE_PROTECTION = create(key("fire_protection"));
+    public static final TypedKey<PatternType> FLOW = create(key("flow"));
 
     /**
-     * {@code minecraft:flame}
+     * {@code minecraft:flower}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> FLAME = create(key("flame"));
+    public static final TypedKey<PatternType> FLOWER = create(key("flower"));
 
     /**
-     * {@code minecraft:fortune}
+     * {@code minecraft:globe}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> FORTUNE = create(key("fortune"));
+    public static final TypedKey<PatternType> GLOBE = create(key("globe"));
 
     /**
-     * {@code minecraft:frost_walker}
+     * {@code minecraft:gradient}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> FROST_WALKER = create(key("frost_walker"));
+    public static final TypedKey<PatternType> GRADIENT = create(key("gradient"));
 
     /**
-     * {@code minecraft:impaling}
+     * {@code minecraft:gradient_up}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> IMPALING = create(key("impaling"));
+    public static final TypedKey<PatternType> GRADIENT_UP = create(key("gradient_up"));
 
     /**
-     * {@code minecraft:infinity}
+     * {@code minecraft:guster}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> INFINITY = create(key("infinity"));
+    public static final TypedKey<PatternType> GUSTER = create(key("guster"));
 
     /**
-     * {@code minecraft:knockback}
+     * {@code minecraft:half_horizontal}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> KNOCKBACK = create(key("knockback"));
+    public static final TypedKey<PatternType> HALF_HORIZONTAL = create(key("half_horizontal"));
 
     /**
-     * {@code minecraft:looting}
+     * {@code minecraft:half_horizontal_bottom}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> LOOTING = create(key("looting"));
+    public static final TypedKey<PatternType> HALF_HORIZONTAL_BOTTOM = create(key("half_horizontal_bottom"));
 
     /**
-     * {@code minecraft:loyalty}
+     * {@code minecraft:half_vertical}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> LOYALTY = create(key("loyalty"));
+    public static final TypedKey<PatternType> HALF_VERTICAL = create(key("half_vertical"));
 
     /**
-     * {@code minecraft:luck_of_the_sea}
+     * {@code minecraft:half_vertical_right}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> LUCK_OF_THE_SEA = create(key("luck_of_the_sea"));
+    public static final TypedKey<PatternType> HALF_VERTICAL_RIGHT = create(key("half_vertical_right"));
 
     /**
-     * {@code minecraft:lure}
+     * {@code minecraft:mojang}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> LURE = create(key("lure"));
+    public static final TypedKey<PatternType> MOJANG = create(key("mojang"));
 
     /**
-     * {@code minecraft:mending}
+     * {@code minecraft:piglin}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> MENDING = create(key("mending"));
+    public static final TypedKey<PatternType> PIGLIN = create(key("piglin"));
 
     /**
-     * {@code minecraft:multishot}
+     * {@code minecraft:rhombus}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> MULTISHOT = create(key("multishot"));
+    public static final TypedKey<PatternType> RHOMBUS = create(key("rhombus"));
 
     /**
-     * {@code minecraft:piercing}
+     * {@code minecraft:skull}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> PIERCING = create(key("piercing"));
+    public static final TypedKey<PatternType> SKULL = create(key("skull"));
 
     /**
-     * {@code minecraft:power}
+     * {@code minecraft:small_stripes}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> POWER = create(key("power"));
+    public static final TypedKey<PatternType> SMALL_STRIPES = create(key("small_stripes"));
 
     /**
-     * {@code minecraft:projectile_protection}
+     * {@code minecraft:square_bottom_left}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> PROJECTILE_PROTECTION = create(key("projectile_protection"));
+    public static final TypedKey<PatternType> SQUARE_BOTTOM_LEFT = create(key("square_bottom_left"));
 
     /**
-     * {@code minecraft:protection}
+     * {@code minecraft:square_bottom_right}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> PROTECTION = create(key("protection"));
+    public static final TypedKey<PatternType> SQUARE_BOTTOM_RIGHT = create(key("square_bottom_right"));
 
     /**
-     * {@code minecraft:punch}
+     * {@code minecraft:square_top_left}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> PUNCH = create(key("punch"));
+    public static final TypedKey<PatternType> SQUARE_TOP_LEFT = create(key("square_top_left"));
 
     /**
-     * {@code minecraft:quick_charge}
+     * {@code minecraft:square_top_right}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> QUICK_CHARGE = create(key("quick_charge"));
+    public static final TypedKey<PatternType> SQUARE_TOP_RIGHT = create(key("square_top_right"));
 
     /**
-     * {@code minecraft:respiration}
+     * {@code minecraft:straight_cross}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> RESPIRATION = create(key("respiration"));
+    public static final TypedKey<PatternType> STRAIGHT_CROSS = create(key("straight_cross"));
 
     /**
-     * {@code minecraft:riptide}
+     * {@code minecraft:stripe_bottom}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> RIPTIDE = create(key("riptide"));
+    public static final TypedKey<PatternType> STRIPE_BOTTOM = create(key("stripe_bottom"));
 
     /**
-     * {@code minecraft:sharpness}
+     * {@code minecraft:stripe_center}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> SHARPNESS = create(key("sharpness"));
+    public static final TypedKey<PatternType> STRIPE_CENTER = create(key("stripe_center"));
 
     /**
-     * {@code minecraft:silk_touch}
+     * {@code minecraft:stripe_downleft}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> SILK_TOUCH = create(key("silk_touch"));
+    public static final TypedKey<PatternType> STRIPE_DOWNLEFT = create(key("stripe_downleft"));
 
     /**
-     * {@code minecraft:smite}
+     * {@code minecraft:stripe_downright}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> SMITE = create(key("smite"));
+    public static final TypedKey<PatternType> STRIPE_DOWNRIGHT = create(key("stripe_downright"));
 
     /**
-     * {@code minecraft:soul_speed}
+     * {@code minecraft:stripe_left}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> SOUL_SPEED = create(key("soul_speed"));
+    public static final TypedKey<PatternType> STRIPE_LEFT = create(key("stripe_left"));
 
     /**
-     * {@code minecraft:sweeping_edge}
+     * {@code minecraft:stripe_middle}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> SWEEPING_EDGE = create(key("sweeping_edge"));
+    public static final TypedKey<PatternType> STRIPE_MIDDLE = create(key("stripe_middle"));
 
     /**
-     * {@code minecraft:swift_sneak}
+     * {@code minecraft:stripe_right}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> SWIFT_SNEAK = create(key("swift_sneak"));
+    public static final TypedKey<PatternType> STRIPE_RIGHT = create(key("stripe_right"));
 
     /**
-     * {@code minecraft:thorns}
+     * {@code minecraft:stripe_top}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> THORNS = create(key("thorns"));
+    public static final TypedKey<PatternType> STRIPE_TOP = create(key("stripe_top"));
 
     /**
-     * {@code minecraft:unbreaking}
+     * {@code minecraft:triangle_bottom}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> UNBREAKING = create(key("unbreaking"));
+    public static final TypedKey<PatternType> TRIANGLE_BOTTOM = create(key("triangle_bottom"));
 
     /**
-     * {@code minecraft:vanishing_curse}
+     * {@code minecraft:triangle_top}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> VANISHING_CURSE = create(key("vanishing_curse"));
+    public static final TypedKey<PatternType> TRIANGLE_TOP = create(key("triangle_top"));
 
     /**
-     * {@code minecraft:wind_burst}
+     * {@code minecraft:triangles_bottom}
      *
      * @apiNote This field is version-dependant and may be removed in future Minecraft versions
      */
-    public static final TypedKey<Enchantment> WIND_BURST = create(key("wind_burst"));
+    public static final TypedKey<PatternType> TRIANGLES_BOTTOM = create(key("triangles_bottom"));
 
-    private EnchantmentKeys() {
+    /**
+     * {@code minecraft:triangles_top}
+     *
+     * @apiNote This field is version-dependant and may be removed in future Minecraft versions
+     */
+    public static final TypedKey<PatternType> TRIANGLES_TOP = create(key("triangles_top"));
+
+    private BannerPatternKeys() {
     }
 
     /**
-     * Creates a typed key for {@link Enchantment} in the registry {@code minecraft:enchantment}.
+     * Creates a typed key for {@link PatternType} in the registry {@code minecraft:banner_pattern}.
      *
      * @param key the value's key in the registry
      * @return a new typed key
      */
     @ApiStatus.Experimental
-    public static @NonNull TypedKey<Enchantment> create(final @NonNull Key key) {
-        return TypedKey.create(RegistryKey.ENCHANTMENT, key);
+    public static @NonNull TypedKey<PatternType> create(final @NonNull Key key) {
+        return TypedKey.create(RegistryKey.BANNER_PATTERN, key);
     }
 }

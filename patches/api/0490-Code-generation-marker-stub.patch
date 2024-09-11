@@ -4,6 +4,21 @@ Date: Wed, 14 Feb 2024 19:33:27 +0100
 Subject: [PATCH] Code generation marker stub
 
 
+diff --git a/src/main/java/io/papermc/paper/registry/event/RegistryEvents.java b/src/main/java/io/papermc/paper/registry/event/RegistryEvents.java
+index b32ae215e976bcfcdd86b03037de61b3d896f57c..87fc88c5386a4c3749348456554a0d4ad8201ca0 100644
+--- a/src/main/java/io/papermc/paper/registry/event/RegistryEvents.java
++++ b/src/main/java/io/papermc/paper/registry/event/RegistryEvents.java
+@@ -16,8 +16,10 @@ import static io.papermc.paper.registry.event.RegistryEventProviderImpl.create;
+ @ApiStatus.Experimental
+ public final class RegistryEvents {
+ 
++    // Paper start - Generated/RegistryEvents
+     public static final RegistryEventProvider<GameEvent, GameEventRegistryEntry.Builder> GAME_EVENT = create(RegistryKey.GAME_EVENT);
+     public static final RegistryEventProvider<Enchantment, EnchantmentRegistryEntry.Builder> ENCHANTMENT = create(RegistryKey.ENCHANTMENT);
++    // Paper end - Generated/RegistryEvents
+ 
+     private RegistryEvents() {
+     }
 diff --git a/src/main/java/org/bukkit/Art.java b/src/main/java/org/bukkit/Art.java
 index dbbd997d4693f1d9f551bae2ed1d7906c9f39c12..d1a25aa47370e0bee34539ad3464ef2ba40c55cf 100644
 --- a/src/main/java/org/bukkit/Art.java

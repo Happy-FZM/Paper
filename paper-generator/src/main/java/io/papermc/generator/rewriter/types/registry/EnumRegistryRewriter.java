@@ -1,4 +1,4 @@
-package io.papermc.generator.rewriter.types;
+package io.papermc.generator.rewriter.types.registry;
 
 import com.google.common.base.Suppliers;
 import io.papermc.generator.Main;

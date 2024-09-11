@@ -9,6 +9,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import io.papermc.generator.Main;
+import io.papermc.generator.rewriter.types.registry.definition.RegistryEntry;
 import io.papermc.generator.types.SimpleGenerator;
 import io.papermc.generator.utils.Annotations;
 import io.papermc.generator.utils.Formatting;
@@ -18,6 +19,7 @@ import io.papermc.generator.utils.experimental.FlagHolders;
 import io.papermc.generator.utils.experimental.SingleFlagHolder;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import net.kyori.adventure.key.Key;
@@ -28,47 +30,45 @@ import net.minecraft.world.flag.FeatureElement;
 import net.minecraft.world.flag.FeatureFlags;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import javax.lang.model.SourceVersion;
+
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static io.papermc.generator.utils.Annotations.EXPERIMENTAL_API_ANNOTATION;
 import static io.papermc.generator.utils.Annotations.NON_NULL;
 import static io.papermc.generator.utils.Annotations.experimentalAnnotations;
-import static java.util.Objects.requireNonNull;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
-public class GeneratedKeyType<T, A> extends SimpleGenerator {
+public class GeneratedKeyType<T> extends SimpleGenerator {
 
-    private final Class<A> apiType;
+    private final RegistryEntry entry;
     private final Registry<T> registry;
-    private final RegistryKey<A> apiRegistryKey;
-    private final boolean publicCreateKeyMethod;
     private final Supplier<Set<ResourceKey<T>>> experimentalKeys;
     private final boolean isFilteredRegistry;
 
-    public GeneratedKeyType(final String className, final Class<A> apiType, final String packageName, final ResourceKey<? extends Registry<T>> registryKey, final RegistryKey<A> apiRegistryKey, final boolean publicCreateKeyMethod) {
-        super(className, packageName);
-        this.apiType = apiType;
-        this.registry = Main.REGISTRY_ACCESS.registryOrThrow(registryKey);
-        this.apiRegistryKey = apiRegistryKey;
-        this.publicCreateKeyMethod = publicCreateKeyMethod;
+    public GeneratedKeyType(final String packageName, final RegistryEntry entry) {
+        super(entry.keyClassName().concat("Keys"), packageName);
+        this.entry = entry;
+        this.registry = Main.REGISTRY_ACCESS.registryOrThrow((ResourceKey<? extends Registry<T>>) entry.registryKey());
         this.experimentalKeys = Suppliers.memoize(() -> RegistryUtils.collectExperimentalDataDrivenKeys(this.registry));
-        this.isFilteredRegistry = FeatureElement.FILTERED_REGISTRIES.contains(registryKey);
+        this.isFilteredRegistry = FeatureElement.FILTERED_REGISTRIES.contains(entry.registryKey());
     }
 
     private MethodSpec.Builder createMethod(final TypeName returnType) {
         final TypeName keyType = TypeName.get(Key.class).annotated(NON_NULL);
+        final boolean publicCreateKeyMethod = this.entry.allowCustomKeys();
 
         final ParameterSpec keyParam = ParameterSpec.builder(keyType, "key", FINAL).build();
         final MethodSpec.Builder create = MethodSpec.methodBuilder("create")
-            .addModifiers(this.publicCreateKeyMethod ? PUBLIC : PRIVATE, STATIC)
+            .addModifiers(publicCreateKeyMethod ? PUBLIC : PRIVATE, STATIC)
             .addParameter(keyParam)
-            .addCode("return $T.create($T.$L, $N);", TypedKey.class, RegistryKey.class, requireNonNull(RegistryUtils.REGISTRY_KEY_FIELD_NAMES.get(this.apiRegistryKey)), keyParam)
+            .addCode("return $T.create($T.$L, $N);", TypedKey.class, RegistryKey.class, this.entry.registryKeyField(), keyParam)
             .returns(returnType.annotated(NON_NULL));
-        if (this.publicCreateKeyMethod) {
+        if (publicCreateKeyMethod) {
             create.addAnnotation(EXPERIMENTAL_API_ANNOTATION); // TODO remove once not experimental
-            create.addJavadoc(Javadocs.CREATE_TYPED_KEY_JAVADOC, this.apiType, this.registry.key().location().toString());
+            create.addJavadoc(Javadocs.CREATE_TYPED_KEY_JAVADOC, this.entry.apiClass(), this.registry.key().location().toString());
         }
         return create;
     }
@@ -76,7 +76,7 @@ public class GeneratedKeyType<T, A> extends SimpleGenerator {
     private TypeSpec.Builder keyHolderType() {
         return classBuilder(this.className)
             .addModifiers(PUBLIC, FINAL)
-            .addJavadoc(Javadocs.getVersionDependentClassHeader("{@link $T#$L}"), RegistryKey.class, requireNonNull(RegistryUtils.REGISTRY_KEY_FIELD_NAMES.get(this.apiRegistryKey)))
+            .addJavadoc(Javadocs.getVersionDependentClassHeader("{@link $T#$L}"), RegistryKey.class, this.entry.registryKeyField())
             .addAnnotations(Annotations.CLASS_HEADER)
             .addMethod(MethodSpec.constructorBuilder()
                 .addModifiers(PRIVATE)
@@ -86,7 +86,7 @@ public class GeneratedKeyType<T, A> extends SimpleGenerator {
 
     @Override
     protected TypeSpec getTypeSpec() {
-        final TypeName typedKeyType = ParameterizedTypeName.get(TypedKey.class, this.apiType);
+        final TypeName typedKeyType = ParameterizedTypeName.get(TypedKey.class, this.entry.apiClass());
 
         final TypeSpec.Builder typeBuilder = this.keyHolderType();
         final MethodSpec.Builder createMethod = this.createMethod(typedKeyType);
@@ -95,7 +95,11 @@ public class GeneratedKeyType<T, A> extends SimpleGenerator {
         for (final Holder.Reference<T> reference : this.registry.holders().sorted(Formatting.alphabeticKeyOrder(reference -> reference.key().location().getPath())).toList()) {
             final ResourceKey<T> key = reference.key();
             final String keyPath = key.location().getPath();
-            final String fieldName = Formatting.formatKeyAsField(keyPath);
+            String fieldName = Formatting.formatKeyAsField(keyPath);
+            if (!SourceVersion.isIdentifier(fieldName) && this.entry.getFallbackNames().containsKey(key)) {
+                fieldName = this.entry.getFallbackNames().get(key);
+            }
+
             final FieldSpec.Builder fieldBuilder = FieldSpec.builder(typedKeyType, fieldName, PUBLIC, STATIC, FINAL)
                 .initializer("$N(key($S))", createMethod.build(), keyPath)
                 .addJavadoc(Javadocs.getVersionDependentField("{@code $L}"), key.location().toString());

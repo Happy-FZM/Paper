@@ -1,6 +1,6 @@
 package io.papermc.generator.rewriter.types.simple;
 
-import io.papermc.generator.rewriter.types.RegistryFieldRewriter;
+import io.papermc.generator.rewriter.types.registry.RegistryFieldRewriter;
 import io.papermc.generator.utils.BlockStateMapping;
 import io.papermc.typewriter.utils.ClassHelper;
 import net.minecraft.core.Holder;

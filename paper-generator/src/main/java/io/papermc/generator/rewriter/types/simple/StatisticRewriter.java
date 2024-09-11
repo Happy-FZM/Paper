@@ -1,7 +1,7 @@
 package io.papermc.generator.rewriter.types.simple;
 
 import com.google.common.collect.ImmutableMap;
-import io.papermc.generator.rewriter.types.EnumRegistryRewriter;
+import io.papermc.generator.rewriter.types.registry.EnumRegistryRewriter;
 import io.papermc.generator.utils.ClassHelper;
 import io.papermc.generator.utils.Formatting;
 import io.papermc.typewriter.preset.model.EnumValue;

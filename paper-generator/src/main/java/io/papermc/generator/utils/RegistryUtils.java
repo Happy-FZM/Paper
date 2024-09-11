@@ -2,9 +2,6 @@ package io.papermc.generator.utils;
 
 import com.google.common.collect.Sets;
 import io.papermc.generator.utils.experimental.CollectingContext;
-import io.papermc.paper.registry.RegistryKey;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -15,7 +12,6 @@ import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceKey;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 
 public class RegistryUtils {
 
@@ -42,25 +38,5 @@ public class RegistryUtils {
             return Sets.difference(experimental, vanilla);
         }
         return experimental;
-    }
-
-    public static final Map<RegistryKey<?>, String> REGISTRY_KEY_FIELD_NAMES;
-
-    static {
-        final Map<RegistryKey<?>, String> map = new IdentityHashMap<>();
-        try {
-            for (final Field field : RegistryKey.class.getDeclaredFields()) {
-                if (field.getType() != RegistryKey.class || field.isAnnotationPresent(ApiStatus.Internal.class)) {
-                    continue;
-                }
-
-                if (ClassHelper.isStaticConstant(field, Modifier.PUBLIC)) {
-                    map.put((RegistryKey<?>) field.get(null), field.getName());
-                }
-            }
-            REGISTRY_KEY_FIELD_NAMES = Collections.unmodifiableMap(map);
-        } catch (final ReflectiveOperationException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }

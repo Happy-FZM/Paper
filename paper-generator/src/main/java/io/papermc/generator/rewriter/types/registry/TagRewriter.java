@@ -1,4 +1,4 @@
-package io.papermc.generator.rewriter.types;
+package io.papermc.generator.rewriter.types.registry;
 
 import io.papermc.generator.Main;
 import io.papermc.generator.rewriter.utils.Annotations;
