@@ -325,8 +325,6 @@ public final class MapCursor {
 
         Type FRAME = getType("frame");
 
-        @org.bukkit.MinecraftExperimental(org.bukkit.MinecraftExperimental.Requires.TRADE_REBALANCE)
-        @org.jetbrains.annotations.ApiStatus.Experimental
         Type JUNGLE_TEMPLE = getType("jungle_temple");
 
         Type MANSION = getType("mansion");
@@ -343,8 +341,6 @@ public final class MapCursor {
 
         Type RED_X = getType("red_x");
 
-        @org.bukkit.MinecraftExperimental(org.bukkit.MinecraftExperimental.Requires.TRADE_REBALANCE)
-        @org.jetbrains.annotations.ApiStatus.Experimental
         Type SWAMP_HUT = getType("swamp_hut");
 
         Type TARGET_POINT = getType("target_point");
@@ -353,24 +349,14 @@ public final class MapCursor {
 
         Type TRIAL_CHAMBERS = getType("trial_chambers");
 
-        @org.bukkit.MinecraftExperimental(org.bukkit.MinecraftExperimental.Requires.TRADE_REBALANCE)
-        @org.jetbrains.annotations.ApiStatus.Experimental
         Type VILLAGE_DESERT = getType("village_desert");
 
-        @org.bukkit.MinecraftExperimental(org.bukkit.MinecraftExperimental.Requires.TRADE_REBALANCE)
-        @org.jetbrains.annotations.ApiStatus.Experimental
         Type VILLAGE_PLAINS = getType("village_plains");
 
-        @org.bukkit.MinecraftExperimental(org.bukkit.MinecraftExperimental.Requires.TRADE_REBALANCE)
-        @org.jetbrains.annotations.ApiStatus.Experimental
         Type VILLAGE_SAVANNA = getType("village_savanna");
 
-        @org.bukkit.MinecraftExperimental(org.bukkit.MinecraftExperimental.Requires.TRADE_REBALANCE)
-        @org.jetbrains.annotations.ApiStatus.Experimental
         Type VILLAGE_SNOWY = getType("village_snowy");
 
-        @org.bukkit.MinecraftExperimental(org.bukkit.MinecraftExperimental.Requires.TRADE_REBALANCE)
-        @org.jetbrains.annotations.ApiStatus.Experimental
         Type VILLAGE_TAIGA = getType("village_taiga");
         // Paper end - Generated/MapCursorType
 

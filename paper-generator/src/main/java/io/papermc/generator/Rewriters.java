@@ -31,7 +31,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import org.bukkit.Art;
 import org.bukkit.FeatureFlag;
 import org.bukkit.Fluid;
@@ -92,7 +91,7 @@ public final class Rewriters {
                     if (result != null) {
                         return result;
                     }
-                    return ExperimentalHelper.findSoundRelatedFeatureFlag(reference.key());
+                    return ExperimentalHelper.findBundleFeatureFlag(reference.key());
                 }
             })
             .register("Biome", Biome.class, new EnumRegistryRewriter<>(Registries.BIOME).nameAsKey())
@@ -168,16 +167,7 @@ public final class Rewriters {
                 holder("VillagerType", Villager.Type.class, new RegistryFieldRewriter<>(Registries.VILLAGER_TYPE, "getType")),
                 holder("VillagerProfession", Villager.Profession.class, new VillagerProfessionRewriter())
             ))
-            .register("MapCursorType", MapCursor.Type.class, new RegistryFieldRewriter<>(Registries.MAP_DECORATION_TYPE, "getType") {
-                @Override
-                protected @Nullable SingleFlagHolder getRequiredFeature(Holder.Reference<MapDecorationType> reference) {
-                    @Nullable SingleFlagHolder result = super.getRequiredFeature(reference);
-                    if (result != null) {
-                        return result;
-                    }
-                    return ExperimentalHelper.findMapDecorationTypeRelatedFeatureFlag(reference.key());
-                }
-            })
+            .register("MapCursorType", MapCursor.Type.class, new RegistryFieldRewriter<>(Registries.MAP_DECORATION_TYPE, "getType"))
             .register("Structure", Structure.class, new RegistryFieldRewriter<>(Registries.STRUCTURE, "getStructure"))
             .register("StructureType", StructureType.class, new RegistryFieldRewriter<>(Registries.STRUCTURE_TYPE, "getStructureType"))
             .register("TrimPattern", TrimPattern.class, new RegistryFieldRewriter<>(Registries.TRIM_PATTERN, "getTrimPattern"))
