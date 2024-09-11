@@ -14,10 +14,12 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
-public final class RegistryEntry {
-    private final ResourceKey<? extends Registry<?>> registryKey;
-    private final Class<?> registryElementClass;
+public final class RegistryEntry<T> {
+
+    private final ResourceKey<? extends Registry<T>> registryKey;
+    private final Class<T> registryElementClass;
     private final @Nullable Class<?> registryConstantClass;
     private final String registryKeyField;
 
@@ -30,11 +32,12 @@ public final class RegistryEntry {
     private @Nullable String fieldRename;
     private boolean delayed;
     private Optional<String> apiRegistryField = Optional.empty();
-    private @Nullable Map<ResourceKey<?>, String> fallbackFieldNames;
 
-    public RegistryEntry(ResourceKey<? extends Registry<?>> registryKey, @Nullable Class<?> registryConstantClass, String registryKeyField, Class<?> apiClass, String implClass) {
+    private @Nullable Map<ResourceKey<T>, String> fieldNames;
+
+    public RegistryEntry(ResourceKey<? extends Registry<T>> registryKey, @Nullable Class<?> registryConstantClass, String registryKeyField, Class<?> apiClass, String implClass) {
         this.registryKey = registryKey;
-        this.registryElementClass = Main.REGISTRY_ACCESS.registryOrThrow(registryKey).iterator().next().getClass(); // hummm...
+        this.registryElementClass = (Class<T>) Main.REGISTRY_ACCESS.registryOrThrow(registryKey).iterator().next().getClass(); // hummm...
         this.registryConstantClass = registryConstantClass;
         this.registryKeyField = registryKeyField;
         this.apiClass = apiClass;
@@ -43,6 +46,10 @@ public final class RegistryEntry {
 
     public ResourceKey<? extends Registry<?>> registryKey() {
         return this.registryKey;
+    }
+
+    public Registry<T> registry() {
+        return Main.REGISTRY_ACCESS.registryOrThrow(this.registryKey);
     }
 
     public String registryKeyField() {
@@ -57,12 +64,12 @@ public final class RegistryEntry {
         return this.implClass;
     }
 
-    public RegistryEntry delayed() {
+    public RegistryEntry<T> delayed() {
         this.delayed = true;
         return this;
     }
 
-    public RegistryEntry withSerializationUpdater(String fieldName) {
+    public RegistryEntry<T> withSerializationUpdater(String fieldName) {
         this.fieldRename = fieldName;
         return this;
     }
@@ -83,7 +90,7 @@ public final class RegistryEntry {
         return this.apiRegistryBuilderImpl;
     }
 
-    public RegistryEntry apiRegistryBuilder(Class<?> builderClass, String builderImplClass) {
+    public RegistryEntry<T> apiRegistryBuilder(Class<?> builderClass, String builderImplClass) {
         this.apiRegistryBuilder = builderClass;
         this.apiRegistryBuilderImpl = builderImplClass;
         return this;
@@ -93,7 +100,7 @@ public final class RegistryEntry {
         return this.apiRegistryField;
     }
 
-    public RegistryEntry apiRegistryField(String registryField) {
+    public RegistryEntry<T> apiRegistryField(String registryField) {
         this.apiRegistryField = Optional.of(registryField);
         return this;
     }
@@ -110,54 +117,62 @@ public final class RegistryEntry {
         return this.apiRegistryBuilder != null || RegistryEntries.DATA_DRIVEN.contains(this);
     }
 
-    public Map<ResourceKey<?>, String> getFallbackNames() {
-        if (this.fallbackFieldNames == null) {
-            if (this.registryConstantClass == null) {
-                this.fallbackFieldNames = Collections.emptyMap();
-                return this.fallbackFieldNames;
-            }
+    private <TO> Map<ResourceKey<T>, TO> getFields(Map<ResourceKey<T>, TO> map, Function<Field, @Nullable TO> transform) {
+        Registry<T> registry = this.registry();
+        try {
+            for (final Field field : this.registryConstantClass.getDeclaredFields()) {
+                if (!ResourceKey.class.isAssignableFrom(field.getType()) && !Holder.Reference.class.isAssignableFrom(field.getType()) && !this.registryElementClass.isAssignableFrom(field.getType())) {
+                    continue;
+                }
 
-            final Map<ResourceKey<?>, String> map = new IdentityHashMap<>();
-            // Registry<?> registry = Main.REGISTRY_ACCESS.registryOrThrow(this.registryKey);
-            try {
-                for (final Field field : this.registryConstantClass.getDeclaredFields()) {
-                    if (!ResourceKey.class.isAssignableFrom(field.getType()) && !Holder.Reference.class.isAssignableFrom(field.getType()) && !this.registryElementClass.isAssignableFrom(field.getType())) {
-                        continue;
-                    }
+                if (ClassHelper.isStaticConstant(field, Modifier.PUBLIC)) {
+                    @Nullable ResourceKey<T> key = null;
+                    if (this.registryElementClass.isAssignableFrom(field.getType())) {
+                        key = registry.getResourceKey(this.registryElementClass.cast(field.get(null))).orElseThrow();
+                    } else {
+                        if (field.getGenericType() instanceof ParameterizedType complexType && complexType.getActualTypeArguments().length == 1 &&
+                            complexType.getActualTypeArguments()[0] == this.registryElementClass) {
 
-                    if (ClassHelper.isStaticConstant(field, Modifier.PUBLIC)) {
-                        @Nullable ResourceKey<?> key = null;
-                        if (this.registryElementClass.isAssignableFrom(field.getType())) {
-                            // todo maybe if needed
-                            // key = registry.getResourceKey(field.get(null)).orElseThrow();
-                        } else {
-                            if (field.getGenericType() instanceof ParameterizedType complexType && complexType.getActualTypeArguments().length == 1 &&
-                                complexType.getActualTypeArguments()[0] == this.registryElementClass) {
-
-                                if (Holder.Reference.class.isAssignableFrom(field.getType())) {
-                                    key = ((Holder.Reference<?>) field.get(null)).key();
-                                } else {
-                                    key = (ResourceKey<?>) field.get(null);
-                                }
+                            if (Holder.Reference.class.isAssignableFrom(field.getType())) {
+                                key = ((Holder.Reference<T>) field.get(null)).key();
+                            } else {
+                                key = (ResourceKey<T>) field.get(null);
                             }
                         }
-                        if (key != null) {
-                            map.put(key, field.getName());
+                    }
+                    if (key != null) {
+                        TO value = transform.apply(field);
+                        if (value != null) {
+                            map.put(key, value);
                         }
                     }
                 }
-            } catch (ReflectiveOperationException ex) {
-                throw new RuntimeException(ex);
             }
-            this.fallbackFieldNames = Collections.unmodifiableMap(map);
+        } catch (ReflectiveOperationException ex) {
+            throw new RuntimeException(ex);
         }
-        return this.fallbackFieldNames;
+        return map;
+    }
+
+    public Map<ResourceKey<T>, String> getFieldNames() {
+        if (this.fieldNames == null) {
+            this.fieldNames = this.getFields(Field::getName);
+        }
+        return this.fieldNames;
+    }
+
+    public <TO> Map<ResourceKey<T>, TO> getFields(Function<Field, @Nullable TO> transform) {
+        if (this.registryConstantClass == null) {
+            return Collections.emptyMap();
+        }
+
+        return Collections.unmodifiableMap(this.getFields(new IdentityHashMap<>(), transform));
     }
 
     @Override
     public String toString() {
         return "RegistryEntry[" +
-            "resourceKey=" + this.registryKey + ", " +
+            "registryKey=" + this.registryKey + ", " +
             "apiRegistryKey=" + this.registryKeyField + ", " +
             "apiClass=" + this.apiClass + ", " +
             "implClass=" + this.implClass + ", " +

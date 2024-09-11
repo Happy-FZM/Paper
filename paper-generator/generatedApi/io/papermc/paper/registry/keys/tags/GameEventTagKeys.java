@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Vanilla keys for {@link RegistryKey#GAME_EVENT}.
+ * Vanilla tag keys for {@link RegistryKey#GAME_EVENT}.
  *
  * @apiNote The fields provided here are a direct representation of
  * what is available from the vanilla game source. They may be
@@ -65,10 +65,10 @@ public final class GameEventTagKeys {
     }
 
     /**
-     * Creates a typed key for {@link GameEvent} in the registry {@code minecraft:game_event}.
+     * Creates a tag key for {@link GameEvent} in the registry {@code minecraft:game_event}.
      *
-     * @param key the value's key in the registry
-     * @return a new typed key
+     * @param key the tag key's key
+     * @return a new tag key
      */
     @ApiStatus.Experimental
     public static @NonNull TagKey<GameEvent> create(final @NonNull Key key) {

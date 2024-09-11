@@ -8,7 +8,6 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import io.papermc.generator.Main;
 import io.papermc.generator.rewriter.types.registry.definition.RegistryEntry;
 import io.papermc.generator.types.SimpleGenerator;
 import io.papermc.generator.utils.Annotations;
@@ -19,7 +18,6 @@ import io.papermc.generator.utils.experimental.FlagHolders;
 import io.papermc.generator.utils.experimental.SingleFlagHolder;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import net.kyori.adventure.key.Key;
@@ -43,15 +41,15 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 public class GeneratedKeyType<T> extends SimpleGenerator {
 
-    private final RegistryEntry entry;
+    private final RegistryEntry<T> entry;
     private final Registry<T> registry;
     private final Supplier<Set<ResourceKey<T>>> experimentalKeys;
     private final boolean isFilteredRegistry;
 
-    public GeneratedKeyType(final String packageName, final RegistryEntry entry) {
+    public GeneratedKeyType(final String packageName, final RegistryEntry<T> entry) {
         super(entry.keyClassName().concat("Keys"), packageName);
         this.entry = entry;
-        this.registry = Main.REGISTRY_ACCESS.registryOrThrow((ResourceKey<? extends Registry<T>>) entry.registryKey());
+        this.registry = entry.registry();
         this.experimentalKeys = Suppliers.memoize(() -> RegistryUtils.collectExperimentalDataDrivenKeys(this.registry));
         this.isFilteredRegistry = FeatureElement.FILTERED_REGISTRIES.contains(entry.registryKey());
     }
@@ -76,7 +74,7 @@ public class GeneratedKeyType<T> extends SimpleGenerator {
     private TypeSpec.Builder keyHolderType() {
         return classBuilder(this.className)
             .addModifiers(PUBLIC, FINAL)
-            .addJavadoc(Javadocs.getVersionDependentClassHeader("{@link $T#$L}"), RegistryKey.class, this.entry.registryKeyField())
+            .addJavadoc(Javadocs.getVersionDependentClassHeader("keys", "{@link $T#$L}"), RegistryKey.class, this.entry.registryKeyField())
             .addAnnotations(Annotations.CLASS_HEADER)
             .addMethod(MethodSpec.constructorBuilder()
                 .addModifiers(PRIVATE)
@@ -96,8 +94,8 @@ public class GeneratedKeyType<T> extends SimpleGenerator {
             final ResourceKey<T> key = reference.key();
             final String keyPath = key.location().getPath();
             String fieldName = Formatting.formatKeyAsField(keyPath);
-            if (!SourceVersion.isIdentifier(fieldName) && this.entry.getFallbackNames().containsKey(key)) {
-                fieldName = this.entry.getFallbackNames().get(key);
+            if (!SourceVersion.isIdentifier(fieldName) && this.entry.getFieldNames().containsKey(key)) {
+                fieldName = this.entry.getFieldNames().get(key);
             }
 
             final FieldSpec.Builder fieldBuilder = FieldSpec.builder(typedKeyType, fieldName, PUBLIC, STATIC, FINAL)

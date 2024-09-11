@@ -44,7 +44,7 @@ public final class MemoryKey<T> implements Keyed {
         return tClass;
     }
 
-    private static final Map<NamespacedKey, MemoryKey> MEMORY_KEYS = new HashMap<>();
+    private static final Map<NamespacedKey, MemoryKey<?>> MEMORY_KEYS = new HashMap<>();
     //
     // Paper start - Generated/MemoryKey
     // @GeneratedFrom 1.21.1
@@ -145,7 +145,7 @@ public final class MemoryKey<T> implements Keyed {
      * available under that key
      */
     @Nullable
-    public static MemoryKey getByKey(@NotNull NamespacedKey namespacedKey) {
+    public static MemoryKey<?> getByKey(@NotNull NamespacedKey namespacedKey) {
         return MEMORY_KEYS.get(namespacedKey);
     }
 
@@ -155,7 +155,7 @@ public final class MemoryKey<T> implements Keyed {
      * @return the memoryKeys
      */
     @NotNull
-    public static Set<MemoryKey> values() {
+    public static Set<MemoryKey<?>> values() {
         return new HashSet<>(MEMORY_KEYS.values());
     }
 }

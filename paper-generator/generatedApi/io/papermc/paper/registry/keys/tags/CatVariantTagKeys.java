@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Vanilla keys for {@link RegistryKey#CAT_VARIANT}.
+ * Vanilla tag keys for {@link RegistryKey#CAT_VARIANT}.
  *
  * @apiNote The fields provided here are a direct representation of
  * what is available from the vanilla game source. They may be
@@ -44,10 +44,10 @@ public final class CatVariantTagKeys {
     }
 
     /**
-     * Creates a typed key for {@link Cat.Type} in the registry {@code minecraft:cat_variant}.
+     * Creates a tag key for {@link Cat.Type} in the registry {@code minecraft:cat_variant}.
      *
-     * @param key the value's key in the registry
-     * @return a new typed key
+     * @param key the tag key's key
+     * @return a new tag key
      */
     @ApiStatus.Experimental
     public static @NonNull TagKey<Cat.Type> create(final @NonNull Key key) {

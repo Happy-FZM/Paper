@@ -8,6 +8,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import io.papermc.generator.Main;
+import io.papermc.generator.rewriter.types.registry.definition.RegistryEntry;
 import io.papermc.generator.types.SimpleGenerator;
 import io.papermc.generator.utils.Annotations;
 import io.papermc.generator.utils.Formatting;
@@ -18,7 +19,6 @@ import io.papermc.paper.registry.tag.TagKey;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static io.papermc.generator.utils.Annotations.EXPERIMENTAL_API_ANNOTATION;
@@ -29,33 +29,28 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
-public class GeneratedTagKeyType<T, A> extends SimpleGenerator {
+public class GeneratedTagKeyType extends SimpleGenerator {
 
-    private final Class<A> apiType;
-    private final ResourceKey<? extends Registry<T>> registryKey;
-    private final String apiRegistryKeyField;
-    private final boolean publicCreateKeyMethod;
+    private final RegistryEntry<?> entry;
 
-    public GeneratedTagKeyType(final String className, final Class<A> apiType, final String packageName, final ResourceKey<? extends Registry<T>> registryKey, final String apiRegistryKeyField, final boolean publicCreateKeyMethod) {
-        super(className, packageName);
-        this.apiType = apiType;
-        this.registryKey = registryKey;
-        this.apiRegistryKeyField = apiRegistryKeyField;
-        this.publicCreateKeyMethod = publicCreateKeyMethod;
+    public GeneratedTagKeyType(final RegistryEntry<?> entry, final String packageName) {
+        super(entry.keyClassName().concat("TagKeys"), packageName);
+        this.entry = entry;
     }
 
     private MethodSpec.Builder createMethod(final TypeName returnType) {
         final TypeName keyType = TypeName.get(Key.class).annotated(NON_NULL);
+        final boolean publicCreateKeyMethod = true; // tag lifecycle event exists
 
         final ParameterSpec keyParam = ParameterSpec.builder(keyType, "key", FINAL).build();
         final MethodSpec.Builder create = MethodSpec.methodBuilder("create")
-            .addModifiers(this.publicCreateKeyMethod ? PUBLIC : PRIVATE, STATIC)
+            .addModifiers(publicCreateKeyMethod ? PUBLIC : PRIVATE, STATIC)
             .addParameter(keyParam)
-            .addCode("return $T.create($T.$L, $N);", TagKey.class, RegistryKey.class, this.apiRegistryKeyField, keyParam)
+            .addCode("return $T.create($T.$L, $N);", TagKey.class, RegistryKey.class, this.entry.registryKeyField(), keyParam)
             .returns(returnType.annotated(NON_NULL));
-        if (this.publicCreateKeyMethod) {
+        if (publicCreateKeyMethod) {
             create.addAnnotation(EXPERIMENTAL_API_ANNOTATION); // TODO remove once not experimental
-            create.addJavadoc(Javadocs.CREATE_TYPED_KEY_JAVADOC, this.apiType, this.registryKey.location().toString());
+            create.addJavadoc(Javadocs.CREATED_TAG_KEY_JAVADOC, this.entry.apiClass(), this.entry.registryKey().location().toString());
         }
         return create;
     }
@@ -63,7 +58,7 @@ public class GeneratedTagKeyType<T, A> extends SimpleGenerator {
     private TypeSpec.Builder keyHolderType() {
         return classBuilder(this.className)
             .addModifiers(PUBLIC, FINAL)
-            .addJavadoc(Javadocs.getVersionDependentClassHeader("{@link $T#$L}"), RegistryKey.class, this.apiRegistryKeyField)
+            .addJavadoc(Javadocs.getVersionDependentClassHeader("tag keys", "{@link $T#$L}"), RegistryKey.class, this.entry.registryKeyField())
             .addAnnotations(Annotations.CLASS_HEADER)
             .addMethod(MethodSpec.constructorBuilder()
                 .addModifiers(PRIVATE)
@@ -73,12 +68,12 @@ public class GeneratedTagKeyType<T, A> extends SimpleGenerator {
 
     @Override
     protected TypeSpec getTypeSpec() {
-        final TypeName tagKeyType = ParameterizedTypeName.get(TagKey.class, this.apiType);
+        final TypeName tagKeyType = ParameterizedTypeName.get(TagKey.class, this.entry.apiClass());
 
         final TypeSpec.Builder typeBuilder = this.keyHolderType();
         final MethodSpec.Builder createMethod = this.createMethod(tagKeyType);
 
-        final Registry<T> registry = Main.REGISTRY_ACCESS.registryOrThrow(this.registryKey);
+        final Registry<?> registry = this.entry.registry();
 
         final AtomicBoolean allExperimental = new AtomicBoolean(true);
         registry.getTagNames().sorted(Formatting.alphabeticKeyOrder(tagKey -> tagKey.location().getPath())).forEach(tagKey -> {

@@ -34,7 +34,7 @@ import static javax.lang.model.element.Modifier.STATIC;
 @DefaultQualifier(NonNull.class)
 public class MobGoalGenerator extends SimpleGenerator {
 
-    private static final String CLASS_HEADER = Javadocs.getVersionDependentClassHeader("Mob Goals");
+    private static final String CLASS_HEADER = Javadocs.getVersionDependentClassHeader("keys", "Mob Goals");
 
     public MobGoalGenerator(final String className, final String packageName) {
         super(className, packageName);

@@ -10,7 +10,7 @@ import org.bukkit.Registry;
 
 public class PaperRegistriesRewriter extends SearchReplaceRewriter {
 
-    private void appendEntry(String indent, StringBuilder builder, RegistryEntry entry, boolean canBeDelayed, boolean apiOnly) {
+    private void appendEntry(String indent, StringBuilder builder, RegistryEntry<?> entry, boolean canBeDelayed, boolean apiOnly) {
         builder.append(indent);
         if (apiOnly) {
             builder.append("apiOnly");
@@ -28,13 +28,6 @@ public class PaperRegistriesRewriter extends SearchReplaceRewriter {
         builder.append(", ");
         if (apiOnly) {
             builder.append("() -> ");
-            if (RegistryEntries.REGISTRY_RAW_PARAMETERIZED_CLASSES.contains(entry.apiClass())) {
-                // aiaie
-                builder.append('(').append(Registry.class.getCanonicalName()).append('<').append(ClassHelper.retrieveFullNestedName(entry.apiClass())).append("<?>>)");
-                builder.append(' ');
-                builder.append('(').append(Registry.class.getCanonicalName()).append(')');
-                builder.append(' ');
-            }
             builder.append(Registry.class.getCanonicalName()).append('.').append(entry.apiRegistryField().orElse(entry.registryKeyField()));
         } else {
             String apiClassName = ClassHelper.retrieveFullNestedName(entry.apiClass());
@@ -63,7 +56,7 @@ public class PaperRegistriesRewriter extends SearchReplaceRewriter {
         builder.append(metadata.indent()).append("// built-in");
         builder.append('\n');
 
-        for (RegistryEntry entry : RegistryEntries.BUILT_IN) {
+        for (RegistryEntry<?> entry : RegistryEntries.BUILT_IN) {
             appendEntry(metadata.indent(), builder, entry, false, false);
         }
 
@@ -71,7 +64,7 @@ public class PaperRegistriesRewriter extends SearchReplaceRewriter {
         builder.append(metadata.indent()).append("// data-driven");
         builder.append('\n');
 
-        for (RegistryEntry entry : RegistryEntries.DATA_DRIVEN) {
+        for (RegistryEntry<?> entry : RegistryEntries.DATA_DRIVEN) {
             appendEntry(metadata.indent(), builder, entry, true, false);
         }
 
@@ -79,7 +72,7 @@ public class PaperRegistriesRewriter extends SearchReplaceRewriter {
         builder.append(metadata.indent()).append("// api-only");
         builder.append('\n');
 
-        for (RegistryEntry entry : RegistryEntries.API_ONLY) {
+        for (RegistryEntry<?> entry : RegistryEntries.API_ONLY) {
             appendEntry(metadata.indent(), builder, entry, false, true);
         }
 

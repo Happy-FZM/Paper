@@ -3,22 +3,19 @@ package io.papermc.generator.rewriter.types.simple;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableMap;
 import io.papermc.generator.rewriter.types.registry.EnumRegistryRewriter;
+import io.papermc.generator.rewriter.types.registry.definition.RegistryEntries;
 import io.papermc.generator.types.goal.MobGoalNames;
-import io.papermc.generator.utils.ClassHelper;
 import io.papermc.typewriter.preset.model.EnumValue;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -27,27 +24,13 @@ import static io.papermc.typewriter.utils.Formatting.quoted;
 
 public class EntityTypeRewriter extends EnumRegistryRewriter<EntityType<?>> {
 
-    private static final Map<EntityType<?>, Class<? extends Entity>> ENTITY_GENERIC_TYPES;
-
-    static {
-        final Map<EntityType<?>, Class<? extends Entity>> map = new IdentityHashMap<>();
-        try {
-            for (final Field field : EntityType.class.getDeclaredFields()) {
-                if (!EntityType.class.isAssignableFrom(field.getType())) {
-                    continue;
-                }
-
-                if (ClassHelper.isStaticConstant(field, Modifier.PUBLIC)) {
-                    if (field.getGenericType() instanceof ParameterizedType complexType && complexType.getActualTypeArguments().length == 1) {
-                        map.put((EntityType<?>) field.get(null), (Class<? extends Entity>) complexType.getActualTypeArguments()[0]);
-                    }
-                }
+    private static final Map<ResourceKey<EntityType<?>>, Class<? extends Entity>> ENTITY_GENERIC_TYPES =
+        RegistryEntries.byRegistryKey(Registries.ENTITY_TYPE).getFields(field -> {
+            if (field.getGenericType() instanceof ParameterizedType complexType && complexType.getActualTypeArguments().length == 1) {
+                return (Class<? extends Entity>) complexType.getActualTypeArguments()[0];
             }
-        } catch (ReflectiveOperationException ex) {
-            throw new RuntimeException(ex);
-        }
-        ENTITY_GENERIC_TYPES = Collections.unmodifiableMap(map);
-    }
+            return null;
+        });
 
     private static final Map<String, String> CLASS_RENAMES = ImmutableMap.<String, String>builder()
         .put("ExperienceBottle", "ThrownExpBottle")
@@ -177,7 +160,7 @@ public class EntityTypeRewriter extends EnumRegistryRewriter<EntityType<?>> {
     }
 
     private String toBukkitClass(Holder.Reference<EntityType<?>> reference) {
-        Class<? extends Entity> internalClass = ENTITY_GENERIC_TYPES.get(reference.value());
+        Class<? extends Entity> internalClass = ENTITY_GENERIC_TYPES.get(reference.key());
         if (Mob.class.isAssignableFrom(internalClass)) {
             return MobGoalNames.bukkitMap.get((Class<? extends Mob>) internalClass).getSimpleName();
         }

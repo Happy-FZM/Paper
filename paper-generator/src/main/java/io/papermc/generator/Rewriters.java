@@ -7,13 +7,13 @@ import io.papermc.generator.rewriter.types.registry.RegistryFieldRewriter;
 import io.papermc.generator.rewriter.types.registry.TagRewriter;
 import io.papermc.generator.rewriter.types.Types;
 import io.papermc.generator.rewriter.types.registry.definition.RegistryDefinitionRewriters;
+import io.papermc.generator.rewriter.types.registry.definition.RegistryEntries;
 import io.papermc.generator.rewriter.types.simple.BlockTypeRewriter;
 import io.papermc.generator.rewriter.types.simple.CraftBlockDataMapping;
 import io.papermc.generator.rewriter.types.simple.CraftBlockEntityStateMapping;
 import io.papermc.generator.rewriter.types.simple.CraftPotionUtilRewriter;
 import io.papermc.generator.rewriter.types.simple.EntityTypeRewriter;
 import io.papermc.generator.rewriter.types.simple.ItemTypeRewriter;
-import io.papermc.generator.rewriter.types.simple.JukeboxSongRewriter;
 import io.papermc.generator.rewriter.types.simple.MapPaletteRewriter;
 import io.papermc.generator.rewriter.types.simple.MaterialRewriter;
 import io.papermc.generator.rewriter.types.simple.MemoryKeyRewriter;
@@ -73,6 +73,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+
+import javax.lang.model.SourceVersion;
 
 import static io.papermc.generator.rewriter.registration.PaperPatternSourceSetRewriter.composite;
 import static io.papermc.generator.rewriter.registration.RewriterHolder.holder;
@@ -168,6 +170,17 @@ public final class Rewriters {
                 holder("VillagerType", Villager.Type.class, new RegistryFieldRewriter<>(Registries.VILLAGER_TYPE, "getType")),
                 holder("VillagerProfession", Villager.Profession.class, new VillagerProfessionRewriter())
             ))
+            .register("JukeboxSong", JukeboxSong.class, new RegistryFieldRewriter<>(Registries.JUKEBOX_SONG, "get") {
+                @Override
+                protected String rewriteFieldName(Holder.Reference<net.minecraft.world.item.JukeboxSong> reference) {
+                    String keyedName = super.rewriteFieldName(reference);
+                    if (!SourceVersion.isIdentifier(keyedName)) {
+                        // fallback to field names for invalid identifier (happens for 5, 11, 13 etc.)
+                        return RegistryEntries.byRegistryKey(Registries.JUKEBOX_SONG).getFieldNames().get(reference.key());
+                    }
+                    return keyedName;
+                }
+            })
             .register("MapCursorType", MapCursor.Type.class, new RegistryFieldRewriter<>(Registries.MAP_DECORATION_TYPE, "getType"))
             .register("Structure", Structure.class, new RegistryFieldRewriter<>(Registries.STRUCTURE, "getStructure"))
             .register("StructureType", StructureType.class, new RegistryFieldRewriter<>(Registries.STRUCTURE_TYPE, "getStructureType"))
@@ -179,8 +192,7 @@ public final class Rewriters {
             .register("WolfVariant", Wolf.Variant.class, new RegistryFieldRewriter<>(Registries.WOLF_VARIANT, "getVariant"))
             .register("CatType", Cat.Type.class, new RegistryFieldRewriter<>(Registries.CAT_VARIANT, "getType"))
             .register("FrogVariant", Frog.Variant.class, new RegistryFieldRewriter<>(Registries.FROG_VARIANT, "getVariant"))
-            .register("PatternType", PatternType.class, new RegistryFieldRewriter(Registries.BANNER_PATTERN, "getType"))
-            .register("JukeboxSong", JukeboxSong.class, new JukeboxSongRewriter())
+            .register("PatternType", PatternType.class, new RegistryFieldRewriter<>(Registries.BANNER_PATTERN, "getType"))
             .register("MemoryKey", MemoryKey.class, new MemoryKeyRewriter())
             .register("ItemType", ItemType.class, new ItemTypeRewriter())
             .register("BlockType", BlockType.class, new BlockTypeRewriter())

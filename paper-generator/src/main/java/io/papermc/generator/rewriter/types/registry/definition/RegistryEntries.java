@@ -58,21 +58,25 @@ import org.bukkit.map.MapCursor;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public final class RegistryEntries {
 
-    private static RegistryEntry entry(ResourceKey<? extends Registry<?>> resourceKey, @Nullable Class<?> registryConstantClass, String registryKeyField, Class<?> apiClass, String implClass) {
-        return new RegistryEntry(resourceKey, registryConstantClass, registryKeyField, apiClass, implClass);
+    private static <T> RegistryEntry<T> entry(ResourceKey<? extends Registry<T>> resourceKey, @Nullable Class<?> registryConstantClass, String registryKeyField, Class<?> apiClass, String implClass) {
+        return new RegistryEntry<>(resourceKey, registryConstantClass, registryKeyField, apiClass, implClass);
     }
 
-    private static RegistryEntry entry(ResourceKey<? extends Registry<?>> resourceKey, @Nullable Class<?> registryConstantClass, String registryKeyField, Class<?> apiClass) {
+    private static <T> RegistryEntry<T> entry(ResourceKey<? extends Registry<T>> resourceKey, @Nullable Class<?> registryConstantClass, String registryKeyField, Class<?> apiClass) {
         String name = ClassHelper.retrieveFullNestedName(apiClass);
         String[] classes = name.split("\\.");
         if (classes.length == 0) {
-            return new RegistryEntry(resourceKey, registryConstantClass, registryKeyField, apiClass, "Craft".concat(apiClass.getSimpleName()));
+            return new RegistryEntry<>(resourceKey, registryConstantClass, registryKeyField, apiClass, "Craft".concat(apiClass.getSimpleName()));
         }
 
         StringBuilder implName = new StringBuilder(name.length() + "Craft".length() * 2);
@@ -82,19 +86,15 @@ public final class RegistryEntries {
             implName.append("Craft".concat(classes[i]));
         }
 
-        return new RegistryEntry(resourceKey, registryConstantClass, registryKeyField, apiClass,implName.toString());
+        return new RegistryEntry<>(resourceKey, registryConstantClass, registryKeyField, apiClass,implName.toString());
     }
-
-    public static final Set<Class<?>> REGISTRY_RAW_PARAMETERIZED_CLASSES = Set.of(
-        MemoryKey.class
-    );
 
     public static final Set<Class<?>> REGISTRY_CLASS_NAME_BASED_ON_API = Set.of(
         BlockType.class,
         ItemType.class
     );
 
-    public static final List<RegistryEntry> BUILT_IN = List.of(
+    public static final List<RegistryEntry<?>> BUILT_IN = List.of(
         entry(Registries.GAME_EVENT, net.minecraft.world.level.gameevent.GameEvent.class, "GAME_EVENT", GameEvent.class).apiRegistryBuilder(GameEventRegistryEntry.Builder.class, "PaperGameEventRegistryEntry.PaperBuilder"),
         entry(Registries.INSTRUMENT, Instruments.class, "INSTRUMENT", MusicInstrument.class),
         entry(Registries.MOB_EFFECT, MobEffects.class, "MOB_EFFECT", PotionEffectType.class),
@@ -108,7 +108,7 @@ public final class RegistryEntries {
         entry(Registries.MAP_DECORATION_TYPE, MapDecorationTypes.class, "MAP_DECORATION_TYPE", MapCursor.Type.class)
     );
 
-    public static final List<RegistryEntry> DATA_DRIVEN = List.of(
+    public static final List<RegistryEntry<?>> DATA_DRIVEN = List.of(
         entry(Registries.STRUCTURE, null, "STRUCTURE", Structure.class).delayed(),
         entry(Registries.TRIM_MATERIAL, TrimMaterials.class, "TRIM_MATERIAL", TrimMaterial.class).delayed(),
         entry(Registries.TRIM_PATTERN, TrimPatterns.class, "TRIM_PATTERN", TrimPattern.class).delayed(),
@@ -119,7 +119,7 @@ public final class RegistryEntries {
         entry(Registries.BANNER_PATTERN, BannerPatterns.class, "BANNER_PATTERN", PatternType.class).delayed()
     );
 
-    public static final List<RegistryEntry> API_ONLY = List.of(
+    public static final List<RegistryEntry<?>> API_ONLY = List.of(
         entry(Registries.BIOME, Biomes.class, "BIOME", Biome.class),
         entry(Registries.PAINTING_VARIANT, PaintingVariants.class, "PAINTING_VARIANT", Art.class).apiRegistryField("ART"),
         entry(Registries.ATTRIBUTE, Attributes.class, "ATTRIBUTE", Attribute.class),
@@ -131,12 +131,28 @@ public final class RegistryEntries {
         entry(Registries.FLUID, Fluids.class, "FLUID", Fluid.class)
     );
 
+    public static final Map<ResourceKey<? extends Registry<?>>, RegistryEntry<?>> BY_REGISTRY_KEY;
+    static {
+        Map<ResourceKey<? extends Registry<?>>, RegistryEntry<?>> byResourceKey = new IdentityHashMap<>(BUILT_IN.size() + DATA_DRIVEN.size() + API_ONLY.size());
+        forEach(entry -> {
+            byResourceKey.put(entry.registryKey(), entry);
+        });
+        for (RegistryEntry<?> entry : RegistryEntries.API_ONLY) {
+            byResourceKey.put(entry.registryKey(), entry);
+        }
+        BY_REGISTRY_KEY = Collections.unmodifiableMap(byResourceKey);
+    }
+
+    public static <T> RegistryEntry<T> byRegistryKey(ResourceKey<? extends Registry<T>> registryKey) {
+        return (RegistryEntry<T>) Objects.requireNonNull(BY_REGISTRY_KEY.get(registryKey));
+    }
+
     // real registries
-    public static void forEach(Consumer<RegistryEntry> callback) {
-        for (RegistryEntry entry : RegistryEntries.BUILT_IN) {
+    public static void forEach(Consumer<RegistryEntry<?>> callback) {
+        for (RegistryEntry<?> entry : RegistryEntries.BUILT_IN) {
             callback.accept(entry);
         }
-        for (RegistryEntry entry : RegistryEntries.DATA_DRIVEN) {
+        for (RegistryEntry<?> entry : RegistryEntries.DATA_DRIVEN) {
             callback.accept(entry);
         }
     }

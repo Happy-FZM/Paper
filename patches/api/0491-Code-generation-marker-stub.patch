@@ -820,12 +820,12 @@ index 4b84c04675775e2a606630b00de8afe51665cebc..263e65af2ed3818215802de75034fe50
          @NotNull
          private static Variant getVariant(@NotNull String key) {
 diff --git a/src/main/java/org/bukkit/entity/memory/MemoryKey.java b/src/main/java/org/bukkit/entity/memory/MemoryKey.java
-index d615c006c9153fb65024241604b744fbfc383efc..2c7a1222b75d7b65281207f1d4077d26a01cd4a8 100644
+index b757aed1bde330d8720a900f8e0877f77ef14c4a..6903f9c0e78ea64612ac55bac88c15467e73bcdc 100644
 --- a/src/main/java/org/bukkit/entity/memory/MemoryKey.java
 +++ b/src/main/java/org/bukkit/entity/memory/MemoryKey.java
 @@ -46,6 +46,7 @@ public final class MemoryKey<T> implements Keyed {
  
-     private static final Map<NamespacedKey, MemoryKey> MEMORY_KEYS = new HashMap<>();
+     private static final Map<NamespacedKey, MemoryKey<?>> MEMORY_KEYS = new HashMap<>();
      //
 +    // Paper start - Generated/MemoryKey
      public static final MemoryKey<Location> HOME = new MemoryKey<>(NamespacedKey.minecraft("home"), Location.class);

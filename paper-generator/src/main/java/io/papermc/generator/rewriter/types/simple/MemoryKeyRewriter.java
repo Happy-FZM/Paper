@@ -2,18 +2,16 @@ package io.papermc.generator.rewriter.types.simple;
 
 import com.google.gson.internal.Primitives;
 import io.papermc.generator.rewriter.types.registry.RegistryFieldRewriter;
+import io.papermc.generator.rewriter.types.registry.definition.RegistryEntries;
 import io.papermc.generator.utils.ClassHelper;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Unit;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -31,27 +29,12 @@ import static io.papermc.typewriter.utils.Formatting.quoted;
 
 public class MemoryKeyRewriter extends RegistryFieldRewriter<MemoryModuleType<?>> {
 
-    private static final Map<MemoryModuleType<?>, Class<?>> MEMORY_GENERIC_TYPES;
-
-    static {
-        final Map<MemoryModuleType<?>, Class<?>> map = new IdentityHashMap<>();
-        try {
-            for (final Field field : MemoryModuleType.class.getDeclaredFields()) {
-                if (!MemoryModuleType.class.isAssignableFrom(field.getType())) {
-                    continue;
-                }
-
-                if (ClassHelper.isStaticConstant(field, Modifier.PUBLIC)) {
-                    if (field.getGenericType() instanceof ParameterizedType complexType && complexType.getActualTypeArguments().length == 1) {
-                        map.put((MemoryModuleType<?>) field.get(null), ClassHelper.eraseType(complexType.getActualTypeArguments()[0]));
-                    }
-                }
-            }
-        } catch (ReflectiveOperationException ex) {
-            throw new RuntimeException(ex);
+    private static final Map<ResourceKey<MemoryModuleType<?>>, Class<?>> MEMORY_GENERIC_TYPES = RegistryEntries.byRegistryKey(Registries.MEMORY_MODULE_TYPE).getFields(field -> {
+        if (field.getGenericType() instanceof ParameterizedType complexType && complexType.getActualTypeArguments().length == 1) {
+            return ClassHelper.eraseType(complexType.getActualTypeArguments()[0]);
         }
-        MEMORY_GENERIC_TYPES = Collections.unmodifiableMap(map);
-    }
+        return null;
+    });
 
     public MemoryKeyRewriter() {
         super(Registries.MEMORY_MODULE_TYPE, null);
@@ -86,7 +69,7 @@ public class MemoryKeyRewriter extends RegistryFieldRewriter<MemoryModuleType<?>
 
     @Override
     protected boolean canPrintField(Holder.Reference<MemoryModuleType<?>> reference) {
-        Class<?> memoryType = MEMORY_GENERIC_TYPES.get(reference.value());
+        Class<?> memoryType = MEMORY_GENERIC_TYPES.get(reference.key());
         if (IGNORED_TYPES.contains(memoryType)) {
             return false;
         }
@@ -103,7 +86,7 @@ public class MemoryKeyRewriter extends RegistryFieldRewriter<MemoryModuleType<?>
 
     @Override
     protected String rewriteFieldType(Holder.Reference<MemoryModuleType<?>> reference) {
-        Class<?> memoryType = MEMORY_GENERIC_TYPES.get(reference.value());
+        Class<?> memoryType = MEMORY_GENERIC_TYPES.get(reference.key());
 
         if (!Primitives.isWrapperType(memoryType) && API_BRIDGE.containsKey(memoryType)) {
             this.apiMemoryType = API_BRIDGE.get(memoryType);
